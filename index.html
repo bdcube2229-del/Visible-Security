@@ -1,0 +1,1581 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>VS Visible Security</title>
+  <style>
+    :root {
+      --ink: #111417;
+      --muted: #65717c;
+      --paper: #f7f9f8;
+      --panel: #ffffff;
+      --line: #dce4e0;
+      --mint: #18b88f;
+      --amber: #f0a83c;
+      --red: #de4e5b;
+      --blue: #2f6fed;
+      --deep: #17211f;
+      --shadow: 0 24px 70px rgba(15, 24, 24, .16);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      margin: 0;
+      font-family: Inter, "Noto Sans KR", "Apple SD Gothic Neo", "Segoe UI", sans-serif;
+      color: var(--ink);
+      background: var(--paper);
+      letter-spacing: 0;
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    button {
+      font: inherit;
+    }
+
+    .site-nav {
+      position: fixed;
+      z-index: 20;
+      top: 0;
+      left: 0;
+      right: 0;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+      padding: 18px clamp(18px, 4vw, 56px);
+      background: rgba(247, 249, 248, .78);
+      backdrop-filter: blur(18px);
+      border-bottom: 1px solid rgba(220, 228, 224, .72);
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      min-width: 0;
+      font-weight: 760;
+    }
+
+    .mark {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      flex: 0 0 auto;
+      width: 48px;
+      height: 34px;
+      border: 1px solid rgba(17, 20, 23, .16);
+      background: #101816;
+      color: #ffffff;
+      border-radius: 8px;
+      box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .08);
+    }
+
+    .mark svg {
+      display: block;
+      width: 40px;
+      height: 26px;
+    }
+
+    .brand-name {
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      color: #3d474f;
+      font-size: 14px;
+      font-weight: 650;
+    }
+
+    .nav-links a {
+      padding: 8px 0;
+    }
+
+    .hero {
+      min-height: 94vh;
+      display: grid;
+      grid-template-columns: minmax(0, .82fr) minmax(420px, 1.18fr);
+      align-items: center;
+      gap: clamp(28px, 5vw, 72px);
+      padding: 108px clamp(18px, 4vw, 56px) 54px;
+      background:
+        radial-gradient(circle at 80% 18%, rgba(24, 184, 143, .18), transparent 30%),
+        linear-gradient(135deg, #f7f9f8 0%, #eef4f1 48%, #f6f1e8 100%);
+      overflow: hidden;
+    }
+
+    .hero-copy {
+      max-width: 660px;
+      position: relative;
+      z-index: 2;
+    }
+
+    .hero-logo {
+      display: inline-flex;
+      align-items: center;
+      gap: 14px;
+      margin-bottom: 24px;
+      padding: 10px 14px 10px 10px;
+      background: rgba(255, 255, 255, .58);
+      border: 1px solid rgba(17, 20, 23, .12);
+      border-radius: 8px;
+      box-shadow: 0 18px 44px rgba(15, 24, 24, .08);
+    }
+
+    .hero-logo svg {
+      width: 82px;
+      height: 50px;
+      flex: 0 0 auto;
+    }
+
+    .hero-logo span {
+      display: grid;
+      gap: 2px;
+      color: #22302d;
+      font-weight: 850;
+      line-height: 1.05;
+    }
+
+    .hero-logo small {
+      color: #5b6965;
+      font-size: 12px;
+      font-weight: 760;
+    }
+
+    .kicker {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      margin: 0 0 18px;
+      color: #27584e;
+      font-size: 13px;
+      font-weight: 800;
+      text-transform: uppercase;
+    }
+
+    .kicker::before {
+      content: "";
+      width: 10px;
+      height: 10px;
+      background: var(--mint);
+      border-radius: 50%;
+      box-shadow: 0 0 0 6px rgba(24, 184, 143, .16);
+    }
+
+    h1 {
+      margin: 0;
+      font-size: clamp(44px, 7vw, 96px);
+      line-height: .94;
+      letter-spacing: 0;
+      max-width: 8ch;
+    }
+
+    .hero-copy h1 span {
+      display: block;
+      color: #33524c;
+      font-size: .42em;
+      line-height: 1.08;
+      margin-top: 14px;
+      max-width: 13ch;
+    }
+
+    .lead {
+      margin: 26px 0 0;
+      max-width: 610px;
+      color: #3f4b52;
+      font-size: clamp(18px, 2vw, 22px);
+      line-height: 1.62;
+      font-weight: 520;
+    }
+
+    .hero-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-top: 32px;
+    }
+
+    .button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 48px;
+      padding: 0 19px;
+      border: 1px solid var(--ink);
+      border-radius: 8px;
+      font-weight: 780;
+      background: var(--ink);
+      color: #ffffff;
+    }
+
+    .button.secondary {
+      background: rgba(255, 255, 255, .55);
+      color: var(--ink);
+      border-color: rgba(17, 20, 23, .22);
+    }
+
+    .hero-visual {
+      position: relative;
+      min-height: 620px;
+      border-radius: 0;
+    }
+
+    #vsCanvas {
+      width: 100%;
+      height: 620px;
+      display: block;
+      filter: drop-shadow(0 42px 58px rgba(12, 22, 21, .24));
+    }
+
+    .signal-panel {
+      position: absolute;
+      left: 2%;
+      bottom: 3%;
+      width: min(330px, 58%);
+      padding: 16px;
+      background: rgba(255, 255, 255, .82);
+      border: 1px solid rgba(255, 255, 255, .86);
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(18px);
+      border-radius: 8px;
+    }
+
+    .signal-panel strong {
+      display: block;
+      font-size: 14px;
+      margin-bottom: 10px;
+    }
+
+    .route {
+      display: grid;
+      grid-template-columns: 86px 1fr 40px;
+      align-items: center;
+      gap: 10px;
+      min-height: 30px;
+      color: #42505a;
+      font-size: 12px;
+      font-weight: 720;
+    }
+
+    .meter {
+      height: 8px;
+      background: #e8eeeb;
+      border-radius: 20px;
+      overflow: hidden;
+    }
+
+    .meter span {
+      display: block;
+      height: 100%;
+      border-radius: inherit;
+    }
+
+    .features {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 1px;
+      background: var(--line);
+      border-top: 1px solid var(--line);
+      border-bottom: 1px solid var(--line);
+    }
+
+    .feature {
+      padding: clamp(26px, 4vw, 48px);
+      background: var(--panel);
+    }
+
+    .feature small {
+      display: block;
+      margin-bottom: 22px;
+      color: var(--muted);
+      font-weight: 800;
+    }
+
+    .feature h2 {
+      margin: 0;
+      font-size: clamp(22px, 2.4vw, 34px);
+      line-height: 1.18;
+      max-width: 12ch;
+    }
+
+    .feature p {
+      margin: 18px 0 0;
+      color: #53616a;
+      line-height: 1.68;
+      font-size: 15px;
+    }
+
+    .product {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(360px, .86fr);
+      gap: clamp(28px, 5vw, 68px);
+      padding: clamp(64px, 8vw, 112px) clamp(18px, 4vw, 56px);
+      background: #10201d;
+      color: #f8fbfa;
+    }
+
+    .section-title {
+      margin: 0;
+      font-size: clamp(34px, 4.8vw, 68px);
+      line-height: 1.02;
+      letter-spacing: 0;
+      max-width: 11ch;
+    }
+
+    .section-text {
+      margin: 22px 0 0;
+      color: rgba(248, 251, 250, .72);
+      font-size: 17px;
+      line-height: 1.7;
+      max-width: 620px;
+    }
+
+    .layers {
+      display: grid;
+      gap: 12px;
+      margin-top: 34px;
+      max-width: 680px;
+    }
+
+    .layer {
+      display: grid;
+      grid-template-columns: 42px 1fr;
+      gap: 14px;
+      align-items: start;
+      padding: 16px;
+      border: 1px solid rgba(255, 255, 255, .16);
+      background: rgba(255, 255, 255, .055);
+      border-radius: 8px;
+    }
+
+    .layer b {
+      display: grid;
+      place-items: center;
+      width: 42px;
+      height: 42px;
+      background: rgba(24, 184, 143, .16);
+      border: 1px solid rgba(24, 184, 143, .34);
+      color: #6ef0ce;
+      border-radius: 8px;
+    }
+
+    .layer strong {
+      display: block;
+      margin-bottom: 5px;
+      font-size: 16px;
+    }
+
+    .layer span {
+      color: rgba(248, 251, 250, .66);
+      line-height: 1.55;
+      font-size: 14px;
+    }
+
+    .visor-card {
+      position: sticky;
+      top: 96px;
+      align-self: start;
+      padding: 18px;
+      background: #eef4f1;
+      color: var(--ink);
+      border-radius: 8px;
+      box-shadow: 0 32px 80px rgba(0, 0, 0, .26);
+    }
+
+    .visor-screen {
+      position: relative;
+      overflow: hidden;
+      aspect-ratio: 1 / 1.04;
+      background:
+        linear-gradient(150deg, rgba(15, 24, 22, .94), rgba(26, 61, 55, .92)),
+        repeating-linear-gradient(90deg, rgba(255,255,255,.03) 0 1px, transparent 1px 16px);
+      border-radius: 8px;
+    }
+
+    .visor-screen canvas {
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+
+    .hud-label {
+      position: absolute;
+      left: 18px;
+      right: 18px;
+      bottom: 18px;
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      color: #c8fff1;
+      font-size: 12px;
+      font-weight: 800;
+    }
+
+    .use-cases {
+      padding: clamp(64px, 8vw, 110px) clamp(18px, 4vw, 56px);
+      background: #fffaf1;
+    }
+
+    .use-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: end;
+      gap: 28px;
+      margin-bottom: 34px;
+    }
+
+    .use-head h2 {
+      margin: 0;
+      max-width: 620px;
+      font-size: clamp(32px, 4vw, 54px);
+      line-height: 1.08;
+    }
+
+    .mode-switch {
+      display: flex;
+      gap: 6px;
+      padding: 5px;
+      background: #ffffff;
+      border: 1px solid rgba(17, 20, 23, .12);
+      border-radius: 8px;
+      box-shadow: 0 18px 40px rgba(45, 35, 20, .08);
+    }
+
+    .mode-switch button {
+      min-height: 38px;
+      border: 0;
+      border-radius: 6px;
+      padding: 0 13px;
+      background: transparent;
+      color: #59636a;
+      cursor: pointer;
+      font-weight: 760;
+    }
+
+    .mode-switch button.active {
+      background: #101816;
+      color: #ffffff;
+    }
+
+    .case-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    .case {
+      min-height: 230px;
+      padding: 22px;
+      background: #ffffff;
+      border: 1px solid rgba(17, 20, 23, .1);
+      border-radius: 8px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .case .tag {
+      align-self: flex-start;
+      padding: 6px 9px;
+      border-radius: 6px;
+      color: #ffffff;
+      font-size: 12px;
+      font-weight: 800;
+      background: var(--blue);
+    }
+
+    .case h3 {
+      margin: 34px 0 0;
+      font-size: 22px;
+      line-height: 1.2;
+    }
+
+    .case p {
+      margin: 12px 0 0;
+      color: #5e6870;
+      line-height: 1.55;
+      font-size: 14px;
+    }
+
+    .response {
+      padding: clamp(64px, 8vw, 110px) clamp(18px, 4vw, 56px);
+      background: #f7f9f8;
+    }
+
+    .response-head {
+      display: grid;
+      grid-template-columns: minmax(0, .9fr) minmax(320px, .7fr);
+      gap: clamp(24px, 5vw, 64px);
+      align-items: end;
+      margin-bottom: 34px;
+    }
+
+    .response-head h2 {
+      margin: 0;
+      max-width: 760px;
+      font-size: clamp(32px, 4.6vw, 62px);
+      line-height: 1.06;
+    }
+
+    .response-head p {
+      margin: 0;
+      color: #53616a;
+      font-size: 16px;
+      line-height: 1.68;
+    }
+
+    .response-flow {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 1px;
+      background: var(--line);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      overflow: hidden;
+    }
+
+    .step {
+      min-height: 210px;
+      padding: 24px;
+      background: #ffffff;
+    }
+
+    .step b {
+      display: grid;
+      place-items: center;
+      width: 38px;
+      height: 38px;
+      margin-bottom: 22px;
+      border-radius: 8px;
+      background: #101816;
+      color: #ffffff;
+      font-size: 14px;
+    }
+
+    .step h3 {
+      margin: 0;
+      font-size: 21px;
+      line-height: 1.22;
+    }
+
+    .step p {
+      margin: 12px 0 0;
+      color: #5c6870;
+      line-height: 1.58;
+      font-size: 14px;
+    }
+
+    .example-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 14px;
+      margin-top: 18px;
+    }
+
+    .example {
+      display: flex;
+      flex-direction: column;
+      min-height: 330px;
+      padding: 24px;
+      background: #10201d;
+      color: #f8fbfa;
+      border-radius: 8px;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .example::before {
+      content: "";
+      position: absolute;
+      inset: 0 0 auto;
+      height: 5px;
+      background: var(--red);
+    }
+
+    .example:nth-child(2)::before {
+      background: var(--amber);
+    }
+
+    .example:nth-child(3)::before {
+      background: var(--mint);
+    }
+
+    .example-label {
+      color: #86f3d6;
+      font-size: 12px;
+      font-weight: 850;
+      text-transform: uppercase;
+    }
+
+    .example h3 {
+      margin: 18px 0 0;
+      font-size: 24px;
+      line-height: 1.16;
+    }
+
+    .example p {
+      margin: 12px 0 18px;
+      color: rgba(248, 251, 250, .72);
+      line-height: 1.58;
+      font-size: 14px;
+    }
+
+    .action-list {
+      display: grid;
+      gap: 8px;
+      margin: auto 0 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    .action-list li {
+      display: grid;
+      grid-template-columns: 22px 1fr;
+      gap: 9px;
+      align-items: start;
+      color: rgba(248, 251, 250, .84);
+      font-size: 13px;
+      line-height: 1.48;
+    }
+
+    .action-list li::before {
+      content: "";
+      width: 9px;
+      height: 9px;
+      margin-top: 5px;
+      border-radius: 50%;
+      background: #6ef0ce;
+      box-shadow: 0 0 0 5px rgba(110, 240, 206, .12);
+    }
+
+    .closing {
+      padding: clamp(64px, 8vw, 96px) clamp(18px, 4vw, 56px);
+      background: var(--paper);
+    }
+
+    .closing-inner {
+      display: grid;
+      grid-template-columns: 1fr;
+      align-items: center;
+      gap: 30px;
+      border-top: 1px solid var(--line);
+      padding-top: 40px;
+    }
+
+    .closing h2 {
+      margin: 0;
+      font-size: clamp(28px, 4vw, 48px);
+      line-height: 1.1;
+      max-width: 18ch;
+    }
+
+    .closing p {
+      margin: 14px 0 0;
+      color: #59646c;
+      line-height: 1.65;
+      max-width: 680px;
+    }
+
+    footer {
+      display: flex;
+      justify-content: space-between;
+      gap: 16px;
+      padding: 28px clamp(18px, 4vw, 56px);
+      background: #111417;
+      color: rgba(255, 255, 255, .74);
+      font-size: 13px;
+    }
+
+    body:not(.site-ready) .site-nav,
+    body:not(.site-ready) main,
+    body:not(.site-ready) footer {
+      opacity: 0;
+      transform: translateY(34px);
+    }
+
+    body.site-ready .site-nav,
+    body.site-ready main,
+    body.site-ready footer {
+      opacity: 1;
+      transform: translateY(0);
+      transition: opacity .75s ease, transform .75s cubic-bezier(.19, 1, .22, 1);
+    }
+
+    body.site-ready main {
+      transition-delay: .08s;
+    }
+
+    body.site-ready footer {
+      transition-delay: .14s;
+    }
+
+    .reveal {
+      opacity: 0;
+      transform: translateY(38px);
+      transition:
+        opacity .72s ease,
+        transform .72s cubic-bezier(.19, 1, .22, 1);
+      will-change: opacity, transform;
+    }
+
+    .reveal.from-top {
+      transform: translateY(-38px);
+    }
+
+    .reveal.from-bottom {
+      transform: translateY(38px);
+    }
+
+    .reveal.in-view {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .reveal-delay-1 {
+      transition-delay: .08s;
+    }
+
+    .reveal-delay-2 {
+      transition-delay: .16s;
+    }
+
+    .reveal-delay-3 {
+      transition-delay: .24s;
+    }
+
+    .loader {
+      position: fixed;
+      z-index: 100;
+      inset: 0;
+      display: grid;
+      place-items: center;
+      padding: 24px;
+      background:
+        radial-gradient(circle at 50% 36%, rgba(24, 184, 143, .22), transparent 32%),
+        linear-gradient(145deg, #08110f 0%, #10201d 52%, #17211f 100%);
+      color: #f8fbfa;
+      opacity: 1;
+      visibility: visible;
+      transition: opacity .55s ease, visibility .55s ease;
+    }
+
+    .loader.hidden {
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+    }
+
+    .loader-inner {
+      display: grid;
+      justify-items: center;
+      gap: 20px;
+      width: min(420px, 100%);
+      text-align: center;
+    }
+
+    .loader-logo {
+      position: relative;
+      width: min(220px, 70vw);
+      filter: drop-shadow(0 26px 42px rgba(0, 0, 0, .34));
+      animation: loaderFloat 2.2s ease-in-out infinite;
+    }
+
+    .loader-logo svg {
+      display: block;
+      width: 100%;
+      height: auto;
+    }
+
+    .loader-logo::after {
+      content: "";
+      position: absolute;
+      inset: 14% -6%;
+      background: linear-gradient(90deg, transparent, rgba(110, 240, 206, .36), transparent);
+      transform: translateX(-120%) skewX(-14deg);
+      animation: loaderSweep 1.65s ease-in-out infinite;
+    }
+
+    .loader-title {
+      margin: 0;
+      font-size: clamp(22px, 5vw, 36px);
+      line-height: 1.05;
+      font-weight: 860;
+    }
+
+    .loader-copy {
+      margin: 0;
+      max-width: 28ch;
+      color: rgba(248, 251, 250, .68);
+      font-size: 14px;
+      line-height: 1.58;
+      font-weight: 650;
+    }
+
+    .loader-route {
+      position: relative;
+      width: min(320px, 76vw);
+      height: 6px;
+      overflow: hidden;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, .12);
+    }
+
+    .loader-route::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      width: 42%;
+      border-radius: inherit;
+      background: linear-gradient(90deg, #de4e5b, #f0a83c, #6ef0ce);
+      animation: loaderRoute 1.2s cubic-bezier(.42, 0, .18, 1) infinite;
+    }
+
+    @keyframes loaderFloat {
+      0%, 100% {
+        transform: translateY(0) scale(1);
+      }
+      50% {
+        transform: translateY(-8px) scale(1.02);
+      }
+    }
+
+    @keyframes loaderSweep {
+      0% {
+        transform: translateX(-120%) skewX(-14deg);
+      }
+      58%, 100% {
+        transform: translateX(120%) skewX(-14deg);
+      }
+    }
+
+    @keyframes loaderRoute {
+      0% {
+        transform: translateX(-100%);
+      }
+      100% {
+        transform: translateX(250%);
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      body:not(.site-ready) .site-nav,
+      body:not(.site-ready) main,
+      body:not(.site-ready) footer,
+      body.site-ready .site-nav,
+      body.site-ready main,
+      body.site-ready footer,
+      .reveal,
+      .reveal.from-top,
+      .reveal.from-bottom,
+      .reveal.in-view {
+        opacity: 1;
+        transform: none;
+        transition: none;
+      }
+
+      .loader-logo,
+      .loader-logo::after,
+      .loader-route::before {
+        animation: none;
+      }
+    }
+
+    @media (max-width: 980px) {
+      .hero,
+      .product,
+      .closing-inner {
+        grid-template-columns: 1fr;
+      }
+
+      .hero {
+        padding-top: 94px;
+      }
+
+      .hero-visual {
+        min-height: 500px;
+      }
+
+      #vsCanvas {
+        height: 500px;
+      }
+
+      .features,
+      .case-grid,
+      .response-flow,
+      .example-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .response-head {
+        grid-template-columns: 1fr;
+      }
+
+      .visor-card {
+        position: relative;
+        top: 0;
+      }
+    }
+
+    @media (max-width: 680px) {
+      .site-nav {
+        padding: 12px 16px;
+      }
+
+      .nav-links a {
+        display: none;
+      }
+
+      .hero {
+        min-height: auto;
+        gap: 20px;
+      }
+
+      .lead {
+        font-size: 16px;
+      }
+
+      .hero-logo {
+        width: 100%;
+      }
+
+      .hero-actions {
+        flex-direction: column;
+      }
+
+      .button {
+        width: 100%;
+      }
+
+      .hero-visual {
+        min-height: 410px;
+      }
+
+      #vsCanvas {
+        height: 410px;
+      }
+
+      .signal-panel {
+        width: calc(100% - 28px);
+        left: 14px;
+        bottom: 0;
+      }
+
+      .features,
+      .case-grid,
+      .response-flow,
+      .example-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .product {
+        grid-template-columns: 1fr;
+      }
+
+      .use-head {
+        display: block;
+      }
+
+      .mode-switch {
+        margin-top: 22px;
+        overflow-x: auto;
+      }
+
+      footer {
+        flex-direction: column;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="loader" id="loader" role="status" aria-live="polite" aria-label="VS 사이트 로딩 중">
+    <div class="loader-inner">
+      <div class="loader-logo" aria-hidden="true">
+        <svg viewBox="0 0 112 64" role="img" focusable="false">
+          <path d="M5 32C20 9 37 3 56 3s36 6 51 29C92 55 75 61 56 61S20 55 5 32Z" fill="none" stroke="rgba(255,255,255,.86)" stroke-width="7" stroke-linejoin="round"/>
+          <circle cx="56" cy="32" r="23" fill="rgba(24,184,143,.26)" stroke="#6ef0ce" stroke-width="4"/>
+          <path d="M40 21l11 23 11-23" fill="none" stroke="#ffffff" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M73 21c-6-3-15-1-15 5 0 9 16 4 16 13 0 6-11 8-18 3" fill="none" stroke="#d9fff5" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </div>
+      <h2 class="loader-title">Visible Security</h2>
+      <p class="loader-copy">취약점과 공격 경로를 시야 위에 매핑하는 중</p>
+      <div class="loader-route" aria-hidden="true"></div>
+    </div>
+  </div>
+
+  <nav class="site-nav" aria-label="주요 메뉴">
+    <a class="brand" href="#top" aria-label="VS Visible Security 홈">
+      <span class="mark" aria-hidden="true">
+        <svg viewBox="0 0 112 64" role="img" focusable="false">
+          <path d="M5 32C20 9 37 3 56 3s36 6 51 29C92 55 75 61 56 61S20 55 5 32Z" fill="none" stroke="rgba(255,255,255,.86)" stroke-width="7" stroke-linejoin="round"/>
+          <circle cx="56" cy="32" r="23" fill="rgba(24,184,143,.26)" stroke="#6ef0ce" stroke-width="4"/>
+          <path d="M40 21l11 23 11-23" fill="none" stroke="#ffffff" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M73 21c-6-3-15-1-15 5 0 9 16 4 16 13 0 6-11 8-18 3" fill="none" stroke="#d9fff5" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </span>
+      <span class="brand-name">Visible Security</span>
+    </a>
+    <div class="nav-links">
+      <a href="#lens">렌즈</a>
+      <a href="#routes">경로 분석</a>
+      <a href="#field">현장 적용</a>
+      <a href="#response">대처 예시</a>
+    </div>
+  </nav>
+
+  <main id="top">
+    <section class="hero" aria-labelledby="hero-title">
+      <div class="hero-copy">
+        <div class="hero-logo" aria-label="VS 로고: 눈 속에 V와 S가 겹쳐진 심볼">
+          <svg viewBox="0 0 112 64" role="img" focusable="false">
+            <path d="M5 32C20 9 37 3 56 3s36 6 51 29C92 55 75 61 56 61S20 55 5 32Z" fill="#101816" stroke="rgba(16,24,22,.18)" stroke-width="2" stroke-linejoin="round"/>
+            <path d="M11 32C24 14 39 8 56 8s32 6 45 24C88 50 73 56 56 56S24 50 11 32Z" fill="none" stroke="rgba(255,255,255,.84)" stroke-width="5" stroke-linejoin="round"/>
+            <circle cx="56" cy="32" r="23" fill="rgba(24,184,143,.24)" stroke="#18b88f" stroke-width="4"/>
+            <path d="M40 21l11 23 11-23" fill="none" stroke="#ffffff" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M73 21c-6-3-15-1-15 5 0 9 16 4 16 13 0 6-11 8-18 3" fill="none" stroke="#d9fff5" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          <span>Visible Security<small>Logo concept</small></span>
+        </div>
+        <p class="kicker">Digital security glasses</p>
+        <h1 id="hero-title">VS <span>Visible Security</span></h1>
+        <p class="lead">
+          보이지 않던 취약점과 공격받은 루트의 경로를 현장 시야 위에 겹쳐 보여주는 디지털 안경. VS는 장비, 네트워크, 출입 동선의 위험 신호를 사람이 바로 판단할 수 있는 시각 언어로 바꿉니다.
+        </p>
+        <div class="hero-actions">
+          <a class="button" href="#lens">제품 보기</a>
+          <a class="button secondary" href="#routes">공격 경로 확인</a>
+        </div>
+      </div>
+      <div class="hero-visual" aria-label="VS 디지털 안경 제품 시각화">
+        <canvas id="vsCanvas" width="980" height="720"></canvas>
+        <div class="signal-panel" aria-label="위협 경로 요약">
+          <strong>Live route confidence</strong>
+          <div class="route"><span>Entrance AP</span><div class="meter"><span style="width: 81%; background: var(--red);"></span></div><span>81%</span></div>
+          <div class="route"><span>Lab relay</span><div class="meter"><span style="width: 63%; background: var(--amber);"></span></div><span>63%</span></div>
+          <div class="route"><span>Core rack</span><div class="meter"><span style="width: 42%; background: var(--mint);"></span></div><span>42%</span></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="features" id="lens" aria-label="핵심 기능">
+      <article class="feature">
+        <small>01 / Vulnerability Lens</small>
+        <h2>기기 취약점을 눈앞에 표시</h2>
+        <p>펌웨어 버전, 열린 포트, 미승인 연결처럼 눈으로 볼 수 없는 위험을 장비 위치 위에 바로 띄웁니다.</p>
+      </article>
+      <article class="feature">
+        <small>02 / Attack Route</small>
+        <h2>공격받은 루트의 흐름 추적</h2>
+        <p>최초 진입점부터 내부 이동, 권한 상승 지점까지 시간순 경로로 연결해 대응 우선순위를 줄입니다.</p>
+      </article>
+      <article class="feature">
+        <small>03 / Field Decision</small>
+        <h2>현장에서 바로 판단</h2>
+        <p>관제실의 복잡한 로그를 착용자의 시야에 맞춘 짧은 신호, 색상, 거리 정보로 압축합니다.</p>
+      </article>
+    </section>
+
+    <section class="product" id="routes" aria-labelledby="route-title">
+      <div>
+        <h2 class="section-title" id="route-title">보안 로그가 공간 지도로 바뀌는 순간</h2>
+        <p class="section-text">
+          VS는 네트워크 공격을 화면 속 표가 아니라 실제 공간 위의 선과 노드로 보여줍니다. 사용자는 복도, 서버랙, 회의실 단말기를 바라보며 어떤 취약점이 어떤 경로로 연결됐는지 즉시 파악합니다.
+        </p>
+        <div class="layers">
+          <div class="layer">
+            <b>1</b>
+            <div><strong>장비 인식</strong><span>안경이 시야 안의 라우터, 카메라, 키오스크, 서버랙을 분류하고 보안 상태를 겹쳐 표시합니다.</span></div>
+          </div>
+          <div class="layer">
+            <b>2</b>
+            <div><strong>위험 점수화</strong><span>취약점의 심각도, 노출 범위, 최근 공격 흔적을 합쳐 색상과 거리감으로 표현합니다.</span></div>
+          </div>
+          <div class="layer">
+            <b>3</b>
+            <div><strong>루트 재구성</strong><span>침입자가 이동한 흔적을 선으로 연결해 봉쇄할 장비와 확인할 계정을 좁힙니다.</span></div>
+          </div>
+        </div>
+      </div>
+      <aside class="visor-card" aria-label="VS 렌즈 화면 모의 이미지">
+        <div class="visor-screen">
+          <canvas id="hudCanvas" width="720" height="748"></canvas>
+          <div class="hud-label"><span>VISOR MAP</span><span>ROUTE: ACTIVE</span></div>
+        </div>
+      </aside>
+    </section>
+
+    <section class="use-cases" id="field">
+      <div class="use-head">
+        <h2>보안 담당자가 움직이는 곳마다 시야가 관제 화면이 됩니다.</h2>
+        <div class="mode-switch" role="tablist" aria-label="상황 선택">
+          <button class="active" type="button" data-mode="facility">시설</button>
+          <button type="button" data-mode="network">네트워크</button>
+          <button type="button" data-mode="forensic">포렌식</button>
+        </div>
+      </div>
+      <div class="case-grid" id="caseGrid"></div>
+    </section>
+
+    <section class="response" id="response" aria-labelledby="response-title">
+      <div class="response-head">
+        <h2 id="response-title">공격을 발견한 뒤, VS는 다음 행동까지 보여줍니다.</h2>
+        <p>
+          고객은 단순히 “위험함”을 듣는 것이 아니라 어떤 장비를 격리하고, 어떤 계정을 잠그고, 어떤 증거를 남겨야 하는지 현장 순서대로 확인할 수 있습니다.
+        </p>
+      </div>
+      <div class="response-flow" aria-label="해킹 공격 대처 흐름">
+        <article class="step">
+          <b>01</b>
+          <h3>확인</h3>
+          <p>VS가 공격 시작점, 이동 경로, 영향 장비를 시야 위에 표시해 오탐 여부와 우선순위를 빠르게 구분합니다.</p>
+        </article>
+        <article class="step">
+          <b>02</b>
+          <h3>격리</h3>
+          <p>감염 의심 장비, 취약 AP, 비정상 계정을 분리 대상으로 표시하고 현장 담당자가 바로 봉쇄할 수 있게 안내합니다.</p>
+        </article>
+        <article class="step">
+          <b>03</b>
+          <h3>복구</h3>
+          <p>패치, 비밀번호 초기화, 접근 정책 재적용처럼 필요한 조치를 장비별 체크리스트로 보여줍니다.</p>
+        </article>
+        <article class="step">
+          <b>04</b>
+          <h3>보고</h3>
+          <p>공격 경로, 조치 시간, 남은 위험을 스냅샷으로 저장해 내부 보고와 재발 방지 회의에 활용합니다.</p>
+        </article>
+      </div>
+      <div class="example-grid" aria-label="해킹 공격 대처 예시">
+        <article class="example">
+          <span class="example-label">Example A / Critical</span>
+          <h3>회의실 공유기가 침입 경로로 확인된 경우</h3>
+          <p>VS 렌즈가 공유기에서 서버실 장비로 이어지는 비정상 연결을 붉은 경로로 표시합니다.</p>
+          <ul class="action-list">
+            <li>공유기를 게스트망에서 즉시 분리하고 임시 차단 정책을 적용합니다.</li>
+            <li>같은 경로에 연결된 계정의 세션을 종료하고 비밀번호를 초기화합니다.</li>
+            <li>공격 경로 스냅샷을 저장해 보안팀과 시설팀이 같은 화면으로 대응합니다.</li>
+          </ul>
+        </article>
+        <article class="example">
+          <span class="example-label">Example B / Warning</span>
+          <h3>CCTV 펌웨어 취약점이 악용된 경우</h3>
+          <p>취약 펌웨어가 설치된 카메라와 내부 관리 콘솔 사이의 이동 흔적을 노란 경로로 보여줍니다.</p>
+          <ul class="action-list">
+            <li>해당 카메라를 격리망으로 이동하고 외부 접근을 임시 차단합니다.</li>
+            <li>동일 모델 장비를 한 번에 찾아 패치 우선순위를 지정합니다.</li>
+            <li>관리 콘솔 접속 기록을 보존하고 의심 계정의 권한을 낮춥니다.</li>
+          </ul>
+        </article>
+        <article class="example">
+          <span class="example-label">Example C / Recovery</span>
+          <h3>서버랙까지 접근 흔적이 남은 경우</h3>
+          <p>공격자가 거쳐 간 AP, 중계 장비, 서버랙을 시간순으로 재구성해 복구 순서를 제안합니다.</p>
+          <ul class="action-list">
+            <li>서버랙 연결을 핵심 서비스와 비핵심 서비스로 나눠 단계적으로 격리합니다.</li>
+            <li>관리자 계정, API 키, 원격 접속 정책을 순서대로 재검증합니다.</li>
+            <li>복구 완료 후 남은 취약점을 녹색 체크와 회색 보류 항목으로 분리합니다.</li>
+          </ul>
+        </article>
+      </div>
+    </section>
+
+    <section class="closing">
+      <div class="closing-inner">
+        <div>
+          <h2>Visible Security turns invisible risk into a visible project story.</h2>
+          <p>VS는 가상의 제품 콘셉트를 바탕으로 만든 프로젝트형 웹사이트입니다. 취약점 발견, 공격 경로 시각화, 대응 흐름까지 하나의 경험으로 보여주며 “보안이 보인다”는 아이디어를 분명하게 전달합니다.</p>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <span>VS Visible Security</span>
+    <span>Concept site for digital vulnerability visualization glasses</span>
+  </footer>
+
+  <script>
+    const loader = document.querySelector("#loader");
+    let loaderDone = false;
+    const hideLoader = () => {
+      if (loaderDone) return;
+      loaderDone = true;
+      document.body.classList.add("site-ready");
+      if (!loader) return;
+      loader.classList.add("hidden");
+      window.setTimeout(() => loader.remove(), 700);
+    };
+
+    window.addEventListener("load", () => {
+      window.setTimeout(hideLoader, 1050);
+    });
+
+    window.setTimeout(hideLoader, 2600);
+
+    const revealTargets = [
+      ".features",
+      ".feature",
+      ".product",
+      ".layer",
+      ".visor-card",
+      ".use-cases",
+      ".case",
+      ".response",
+      ".step",
+      ".example",
+      ".closing",
+      "footer"
+    ];
+    const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    let lastScrollY = window.scrollY;
+    let scrollDirection = "down";
+
+    window.addEventListener("scroll", () => {
+      const currentY = window.scrollY;
+      scrollDirection = currentY >= lastScrollY ? "down" : "up";
+      lastScrollY = currentY;
+    }, { passive: true });
+
+    let revealObserver = null;
+
+    function registerRevealItems(items) {
+      if (reduceMotion || !revealObserver) return;
+      items.forEach((item, index) => {
+        item.classList.add("reveal", "from-bottom", `reveal-delay-${index % 4}`);
+        revealObserver.observe(item);
+      });
+    }
+
+    if (reduceMotion) {
+      document.body.classList.add("site-ready");
+    } else {
+      revealObserver = new IntersectionObserver((entries) => {
+        entries.forEach((entry) => {
+          const target = entry.target;
+          if (entry.isIntersecting) {
+            target.classList.remove("in-view", "from-top", "from-bottom");
+            target.classList.add(scrollDirection === "down" ? "from-bottom" : "from-top");
+            requestAnimationFrame(() => target.classList.add("in-view"));
+          } else {
+            target.classList.remove("in-view");
+          }
+        });
+      }, {
+        threshold: 0.14,
+        rootMargin: "0px 0px -8% 0px"
+      });
+
+      registerRevealItems(document.querySelectorAll(revealTargets.join(",")));
+    }
+
+    const cases = {
+      facility: [
+        ["High", "출입구 AP 점검", "외부와 맞닿은 무선 장비의 노출 상태를 현장 동선 위에 표시합니다."],
+        ["Med", "CCTV 취약 펌웨어", "패치가 밀린 카메라를 찾아 주변 장비와의 연결 위험을 보여줍니다."],
+        ["Low", "게스트 단말 분리", "방문자 네트워크가 내부 장비와 닿는 지점을 빠르게 확인합니다."],
+        ["High", "서버실 진입 경로", "공격자가 거쳐 간 장비와 계정을 시간 순서로 재구성합니다."]
+      ],
+      network: [
+        ["High", "권한 상승 흔적", "관리자 권한 획득 이후 이동한 노드를 선명한 경고선으로 묶습니다."],
+        ["Med", "비정상 포트", "일상 트래픽과 다른 포트 사용을 장비 위치별로 분리해 보여줍니다."],
+        ["Med", "세그먼트 우회", "망 분리 정책을 넘어선 연결을 실제 경로와 함께 표시합니다."],
+        ["Low", "정책 미적용", "새로 추가된 장비 중 보안 정책이 누락된 대상을 찾습니다."]
+      ],
+      forensic: [
+        ["High", "초기 침입점", "로그의 첫 이상 신호를 실제 공간의 시작점으로 되돌려 보여줍니다."],
+        ["High", "측면 이동", "분산된 이벤트를 하나의 이동 경로로 합쳐 조사 시간을 줄입니다."],
+        ["Med", "증거 고정", "확인한 장비와 계정을 현장 메모처럼 시야에 고정합니다."],
+        ["Low", "보고 장면 저장", "시각화된 경로를 사건 보고용 스냅샷으로 남길 수 있습니다."]
+      ]
+    };
+
+    const tagColor = { High: "#de4e5b", Med: "#f0a83c", Low: "#18b88f" };
+    const caseGrid = document.querySelector("#caseGrid");
+    const modeButtons = document.querySelectorAll(".mode-switch button");
+
+    function renderCases(mode) {
+      caseGrid.innerHTML = cases[mode].map(([tag, title, text]) => `
+        <article class="case">
+          <span class="tag" style="background:${tagColor[tag]}">${tag}</span>
+          <div>
+            <h3>${title}</h3>
+            <p>${text}</p>
+          </div>
+        </article>
+      `).join("");
+      registerRevealItems(caseGrid.querySelectorAll(".case"));
+    }
+
+    modeButtons.forEach((button) => {
+      button.addEventListener("click", () => {
+        modeButtons.forEach((item) => item.classList.remove("active"));
+        button.classList.add("active");
+        renderCases(button.dataset.mode);
+      });
+    });
+
+    renderCases("facility");
+
+    const heroCanvas = document.querySelector("#vsCanvas");
+    const heroCtx = heroCanvas.getContext("2d");
+    const hudCanvas = document.querySelector("#hudCanvas");
+    const hudCtx = hudCanvas.getContext("2d");
+    let tick = 0;
+
+    function roundedRect(ctx, x, y, w, h, r) {
+      ctx.beginPath();
+      ctx.moveTo(x + r, y);
+      ctx.arcTo(x + w, y, x + w, y + h, r);
+      ctx.arcTo(x + w, y + h, x, y + h, r);
+      ctx.arcTo(x, y + h, x, y, r);
+      ctx.arcTo(x, y, x + w, y, r);
+      ctx.closePath();
+    }
+
+    function drawHero() {
+      const c = heroCanvas;
+      const ctx = heroCtx;
+      ctx.clearRect(0, 0, c.width, c.height);
+
+      const pulse = (Math.sin(tick * .035) + 1) / 2;
+      const grd = ctx.createLinearGradient(110, 90, 850, 650);
+      grd.addColorStop(0, "#dff8f0");
+      grd.addColorStop(.45, "#f4fbf8");
+      grd.addColorStop(1, "#f4e4cc");
+      ctx.fillStyle = grd;
+      roundedRect(ctx, 80, 70, 820, 560, 36);
+      ctx.fill();
+
+      ctx.strokeStyle = "rgba(17, 20, 23, .08)";
+      ctx.lineWidth = 1;
+      for (let x = 135; x < 850; x += 52) {
+        ctx.beginPath();
+        ctx.moveTo(x, 110);
+        ctx.lineTo(x - 80, 590);
+        ctx.stroke();
+      }
+      for (let y = 140; y < 590; y += 48) {
+        ctx.beginPath();
+        ctx.moveTo(120, y);
+        ctx.lineTo(860, y + 22);
+        ctx.stroke();
+      }
+
+      ctx.save();
+      ctx.translate(490, 352);
+      ctx.rotate(-0.04);
+
+      ctx.lineWidth = 14;
+      ctx.lineCap = "round";
+      ctx.strokeStyle = "#111816";
+      ctx.beginPath();
+      ctx.moveTo(-338, -35);
+      ctx.bezierCurveTo(-246, -112, -108, -118, -42, -52);
+      ctx.bezierCurveTo(-20, -31, 20, -31, 42, -52);
+      ctx.bezierCurveTo(108, -118, 246, -112, 338, -35);
+      ctx.stroke();
+
+      const lensGrad = ctx.createLinearGradient(-310, -115, 300, 105);
+      lensGrad.addColorStop(0, "rgba(24, 184, 143, .38)");
+      lensGrad.addColorStop(.45, "rgba(47, 111, 237, .18)");
+      lensGrad.addColorStop(1, "rgba(255, 255, 255, .58)");
+
+      ctx.fillStyle = lensGrad;
+      ctx.strokeStyle = "#111816";
+      ctx.lineWidth = 9;
+      roundedRect(ctx, -328, -118, 278, 178, 38);
+      ctx.fill();
+      ctx.stroke();
+      roundedRect(ctx, 50, -118, 278, 178, 38);
+      ctx.fill();
+      ctx.stroke();
+
+      ctx.strokeStyle = "rgba(255, 255, 255, .72)";
+      ctx.lineWidth = 2.5;
+      roundedRect(ctx, -314, -104, 250, 150, 30);
+      ctx.stroke();
+      roundedRect(ctx, 64, -104, 250, 150, 30);
+      ctx.stroke();
+
+      ctx.strokeStyle = "#111816";
+      ctx.lineWidth = 11;
+      ctx.beginPath();
+      ctx.moveTo(-52, -42);
+      ctx.bezierCurveTo(-24, -20, 24, -20, 52, -42);
+      ctx.stroke();
+
+      ctx.lineWidth = 5;
+      ctx.strokeStyle = "rgba(17, 24, 22, .7)";
+      ctx.beginPath();
+      ctx.moveTo(-28, -16);
+      ctx.quadraticCurveTo(-18, 20, -42, 42);
+      ctx.stroke();
+      ctx.beginPath();
+      ctx.moveTo(28, -16);
+      ctx.quadraticCurveTo(18, 20, 42, 42);
+      ctx.stroke();
+
+      ctx.strokeStyle = "#171f1d";
+      ctx.lineWidth = 14;
+      ctx.beginPath();
+      ctx.moveTo(-328, -45);
+      ctx.bezierCurveTo(-390, -74, -434, -94, -472, -82);
+      ctx.stroke();
+      ctx.beginPath();
+      ctx.moveTo(328, -45);
+      ctx.bezierCurveTo(390, -74, 434, -94, 472, -82);
+      ctx.stroke();
+
+      ctx.fillStyle = "rgba(17, 24, 22, .82)";
+      roundedRect(ctx, -274, -88, 108, 34, 8);
+      ctx.fill();
+      ctx.fillStyle = "rgba(17, 24, 22, .78)";
+      roundedRect(ctx, 166, -88, 108, 34, 8);
+      ctx.fill();
+      ctx.fillStyle = "#d9fff5";
+      ctx.font = "800 12px Inter, sans-serif";
+      ctx.fillText("CVE-81", -254, -66);
+      ctx.fillText("ROOT", 194, -66);
+
+      drawNode(ctx, -214, -12, "#de4e5b", "CVE");
+      drawNode(ctx, -98, 14, "#f0a83c", "AP");
+      drawNode(ctx, 100, 2, "#18b88f", "ID");
+      drawNode(ctx, 214, -18, "#de4e5b", "RT");
+      drawRoute(ctx, -214, -12, -98, 14, "#de4e5b", pulse);
+      drawRoute(ctx, -98, 14, 100, 2, "#f0a83c", pulse);
+      drawRoute(ctx, 100, 2, 214, -18, "#de4e5b", pulse);
+
+      ctx.restore();
+
+      ctx.fillStyle = "rgba(17, 20, 23, .82)";
+      roundedRect(ctx, 630, 118, 184, 128, 12);
+      ctx.fill();
+      ctx.fillStyle = "#d9fff5";
+      ctx.font = "700 18px Inter, sans-serif";
+      ctx.fillText("ROUTE MAP", 653, 155);
+      ctx.font = "700 13px Inter, sans-serif";
+      ctx.fillStyle = "rgba(217,255,245,.72)";
+      ctx.fillText("Entry -> Relay -> Root", 653, 184);
+      ctx.fillStyle = "#de4e5b";
+      ctx.fillRect(653, 206, 118 + pulse * 22, 8);
+      ctx.fillStyle = "#18b88f";
+      ctx.fillRect(653, 224, 76, 8);
+    }
+
+    function drawNode(ctx, x, y, color, label) {
+      ctx.fillStyle = color;
+      ctx.beginPath();
+      ctx.arc(x, y, 19, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.fillStyle = "#ffffff";
+      ctx.font = "800 10px Inter, sans-serif";
+      ctx.textAlign = "center";
+      ctx.textBaseline = "middle";
+      ctx.fillText(label, x, y + 1);
+      ctx.textAlign = "start";
+    }
+
+    function drawRoute(ctx, x1, y1, x2, y2, color, pulse) {
+      ctx.strokeStyle = color;
+      ctx.lineWidth = 5;
+      ctx.setLineDash([12, 9]);
+      ctx.lineDashOffset = -tick * .7;
+      ctx.beginPath();
+      ctx.moveTo(x1, y1);
+      ctx.lineTo(x2, y2);
+      ctx.stroke();
+      ctx.setLineDash([]);
+      ctx.fillStyle = color;
+      ctx.globalAlpha = .18 + pulse * .18;
+      ctx.beginPath();
+      ctx.arc(x2, y2, 42, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.globalAlpha = 1;
+    }
+
+    function drawHud() {
+      const c = hudCanvas;
+      const ctx = hudCtx;
+      ctx.clearRect(0, 0, c.width, c.height);
+      const pulse = (Math.sin(tick * .045) + 1) / 2;
+
+      ctx.strokeStyle = "rgba(200, 255, 241, .08)";
+      ctx.lineWidth = 1;
+      for (let x = 40; x < c.width; x += 44) {
+        ctx.beginPath();
+        ctx.moveTo(x, 0);
+        ctx.lineTo(x - 90, c.height);
+        ctx.stroke();
+      }
+      for (let y = 48; y < c.height; y += 46) {
+        ctx.beginPath();
+        ctx.moveTo(0, y);
+        ctx.lineTo(c.width, y + 24);
+        ctx.stroke();
+      }
+
+      const nodes = [
+        [118, 148, "#de4e5b", "ENTRY"],
+        [252, 234, "#f0a83c", "AP-09"],
+        [360, 390, "#f0a83c", "LAB"],
+        [524, 470, "#de4e5b", "ROOT"],
+        [458, 178, "#18b88f", "SAFE"],
+        [180, 518, "#18b88f", "LOG"]
+      ];
+
+      const route = [nodes[0], nodes[1], nodes[2], nodes[3]];
+      route.forEach((node, index) => {
+        if (index === route.length - 1) return;
+        drawRoute(ctx, node[0], node[1], route[index + 1][0], route[index + 1][1], index === 0 ? "#de4e5b" : "#f0a83c", pulse);
+      });
+
+      nodes.forEach(([x, y, color, label]) => {
+        ctx.globalAlpha = color === "#18b88f" ? .78 : 1;
+        ctx.fillStyle = color;
+        ctx.beginPath();
+        ctx.arc(x, y, color === "#de4e5b" ? 17 + pulse * 4 : 14, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.globalAlpha = 1;
+        ctx.fillStyle = "#eafff9";
+        ctx.font = "800 13px Inter, sans-serif";
+        ctx.fillText(label, x + 22, y + 5);
+      });
+
+      ctx.fillStyle = "rgba(8, 17, 16, .74)";
+      roundedRect(ctx, 42, 590, 300, 84, 10);
+      ctx.fill();
+      ctx.fillStyle = "#c8fff1";
+      ctx.font = "800 17px Inter, sans-serif";
+      ctx.fillText("Attack route reconstructed", 64, 625);
+      ctx.fillStyle = "rgba(200, 255, 241, .68)";
+      ctx.font = "700 13px Inter, sans-serif";
+      ctx.fillText("4 devices · 2 accounts · 1 critical firmware gap", 64, 652);
+    }
+
+    function loop() {
+      tick += 1;
+      drawHero();
+      drawHud();
+      requestAnimationFrame(loop);
+    }
+
+    loop();
+  </script>
+</body>
+</html>
